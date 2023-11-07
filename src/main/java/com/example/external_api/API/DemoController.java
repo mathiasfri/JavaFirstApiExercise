@@ -1,6 +1,7 @@
 package com.example.external_api.API;
 
 import com.example.external_api.DTO.CombinedResponse;
+import com.example.external_api.RemoteApiTester;
 import com.example.external_api.Service.ApiService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +11,11 @@ import reactor.core.publisher.Mono;
 @RestController
 public class DemoController {
     ApiService apiService;
+    RemoteApiTester remoteApiTester;
 
-    public DemoController(ApiService apiService) {
+    public DemoController(ApiService apiService, RemoteApiTester remoteApiTester) {
         this.apiService = apiService;
+        this.remoteApiTester = remoteApiTester;
     }
 
     private final int SLEEP_TIME = 1000*3;
@@ -26,5 +29,15 @@ public class DemoController {
     @GetMapping(value = "/api")
     public Mono<CombinedResponse> api(){
         return apiService.fetchNameDetails("Mathias");
+    }
+
+    @GetMapping(value = "/api-blocking")
+    public void apiBlocking(){
+        remoteApiTester.callEndpointBlocking();
+    }
+
+    @GetMapping(value = "/api-non-blocking")
+    public void apiNonBlocking(){
+        remoteApiTester.callSlowEndpointNonBlocking();
     }
 }
